@@ -1,0 +1,72 @@
+#include<stdio.h>
+#include<stdlib.h>
+#define MAX 100
+
+typedef struct {
+    int items[MAX];
+    int top;
+}Stack;
+
+int isFull(Stack *s){
+    return s->top==MAX-1;
+}
+
+int isEmpty(Stack *s){
+    return s->top==-1;
+}
+
+void initstack(Stack *s){
+    s->top=-1;
+}
+
+void push(Stack *s, int ele){
+    if(isFull(s)){
+        printf("Stack Overflow\n");
+        return;
+    }
+    s->items[++(s->top)]=ele;
+}
+
+int pop(Stack *s){
+    if(isEmpty(s)){
+        printf("Stack empty\n");
+        return -1;
+    }
+    return s->items[(s->top)--];
+}
+
+
+
+void evaluate(char expr[30]){
+    Stack stack;
+    initstack(&stack);
+    int op1, op2, i=0;
+    while(expr[i]!='\0'){
+        if(expr[i]=='+'||expr[i]=='-'||expr[i]=='*'||expr[i]=='/'){
+            op2=pop(&stack);
+            op1=pop(&stack);
+
+            if(expr[i]=='+'){
+                push(&stack, op1+op2);
+            }else if(expr[i]=='-'){
+                push(&stack, op1-op2);
+            }else if(expr[i]=='*'){
+                push(&stack, op1*op2);
+            }else if(expr[i]=='/'){
+                push(&stack, op1/op2);
+            }
+        }else{
+            push(&stack, expr[i]-'0');
+        }
+        i++;
+    }
+    printf("VALUE IS= %d", pop(&stack));
+}
+
+
+int main(){
+    char expr[30];
+    printf("enter the expression: \n");
+    scanf("%s", expr);
+    evaluate(expr);
+}
