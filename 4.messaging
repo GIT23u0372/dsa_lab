@@ -1,96 +1,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define MAX 100 // Maximum number of messages in the queue
+#define MAX 100      // Maximum number of messages in the queue
 #define MSG_SIZE 256 // Maximum size of a single message
+
 // Define the queue structure
 typedef struct {
- char messages[MAX][MSG_SIZE]; // Array to store messages
- int front; // Index of the front of the queue
- int rear; // Index of the rear of the queue
- int count; // Number of messages in the queue
+    char messages[MAX][MSG_SIZE]; // Array to store messages
+    int front;                    // Index of the front of the queue
+    int rear;                     // Index of the rear of the queue
+    int count;                    // Number of messages in the queue
 } MessageQueue;
+
 // Initialize the queue
 void initQueue(MessageQueue *q) {
- q->front = 0;
- q->rear = -1;
- q->count = 0;
+    q->front = 0;
+    q->rear = -1;
+    q->count = 0;
 }
+
 // Check if the queue is full
 int isFull(MessageQueue *q) {
- return q->count == MAX;
+    return q->count == MAX;
 }
+
 // Check if the queue is empty
 int isEmpty(MessageQueue *q) {
- return q->count == 0;
+    return q->count == 0;
 }
+
 // Enqueue a message
 void enqueue(MessageQueue *q, char *message) {
- if (isFull(q)) {
- printf("Queue is full! Cannot add more messages.\n");
- return;
- }
- q->rear = (q->rear + 1) % MAX;
- strncpy(q->messages[q->rear], message, MSG_SIZE);
- q->messages[q->rear][MSG_SIZE - 1] = '\0'; // Ensure null-termination
- q->count++;
- printf("Message added to the queue.\n");
+    if (isFull(q)) {
+        printf("Queue is full! Cannot add more messages.\n");
+        return;
+    }
+    q->rear = (q->rear + 1) % MAX;
+    strncpy(q->messages[q->rear], message, MSG_SIZE);
+    q->messages[q->rear][MSG_SIZE - 1] = '\0'; // Ensure null-termination
+    q->count++;
+    printf("Message added to the queue.\n");
 }
-// Dequeue a message
-void dequeue(MessageQueue *q) {
- if (isEmpty(q)) {
- printf("Queue is empty! No messages to remove.\n");
- return;
- }
- printf("Message removed: %s\n", q->messages[q->front]);
- q->front = (q->front + 1) % MAX;
- q->count--;
-}
-// Display the contents of the queue
-void displayQueue(MessageQueue *q) {
- if (isEmpty(q)) {
- printf("Queue is empty!\n");
- return;
- }
- printf("Messages in the queue:\n");
- for (int i = 0; i < q->count; i++) {
- int index = (q->front + i) % MAX;
- printf("%d: %s\n", i + 1, q->messages[index]);
- }
-}
-int main() {
- MessageQueue queue;
- initQueue(&queue);
- int choice;
- char message[MSG_SIZE];
- do {
- printf("\nMessaging System:\n");
- printf("1. Add Message\n");
- printf("2. Remove Message\n");
- printf("3. Display Messages\n");
- printf("4. Exit\n");
- printf("Enter your choice: ");
- scanf("%d", &choice);
- getchar(); // Consume newline character
- switch (choice) {
- case 1:
- printf("Enter the message: ");
- fgets(message, MSG_SIZE, stdin);
- message[strcspn(message, "\n")] = '\0'; // Remove trailing newline
- enqueue(&queue, message);
- break;
- case 2:
- dequeue(&queue);
- break;
- case 3:
- displayQueue(&queue);
- break;
- case 4:
- printf("Exiting Messaging System.\n");
- break;
- default:
- printf("Invalid choice! Please try again.\n");
- }
- } while (choice != 4);
- return 0;
-}
+
