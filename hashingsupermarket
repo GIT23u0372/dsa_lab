@@ -1,0 +1,153 @@
+ Consider a super market scenario where sales manager wants to search for the customer details using a 
+customer-id. Customer information like (custid, custname, & custphno) are stored as a structure, and custid will 
+be used as hash key. Develop and execute a program in C using suitable data structures to implement the 
+following operations: 
+a. Insertion of a new data entry. b. Search for customer information using custid. c. Display the records. 
+(Demonstrate collision and its handling using linear probing method). 
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#define TABLE_SIZE 10 
+#define NAME_SIZE 50 
+#define PHONE_SIZE 15 
+// Define the customer structure 
+typedef struct { 
+int custid; 
+char custname[NAME_SIZE]; 
+char custphno[PHONE_SIZE]; 
+} Customer; 
+// Define the hash table entry 
+typedef struct { 
+Customer customer; 
+int isOccupied; // 0 for empty, 1 for occupied 
+} HashTableEntry; 
+// Hash table 
+HashTableEntry hashTable[TABLE_SIZE]; 
+// Initialize the hash table 
+void initHashTable() { 
+for (int i = 0; i < TABLE_SIZE; i++) { 
+hashTable[i].isOccupied = 0; 
+    } 
+} 
+ 
+// Hash function 
+int hashFunction(int key) { 
+    return key % TABLE_SIZE; 
+} 
+ 
+// Insert a new customer into the hash table 
+void insertCustomer(int custid, char *custname, char *custphno) { 
+    int index = hashFunction(custid); 
+    int originalIndex = index; 
+    int i = 0; 
+ 
+    while (hashTable[index].isOccupied) { 
+        if (hashTable[index].customer.custid == custid) { 
+            printf("Customer ID %d already exists!\n", custid); 
+            return; 
+        } 
+        index = (originalIndex + ++i) % TABLE_SIZE; 
+        if (index == originalIndex) { 
+            printf("Hash table is full! Cannot insert new customer.\n"); 
+            return; 
+        } 
+    } 
+ 
+    hashTable[index].customer.custid = custid; 
+    strncpy(hashTable[index].customer.custname, custname, NAME_SIZE); 
+    strncpy(hashTable[index].customer.custphno, custphno, PHONE_SIZE); 
+    hashTable[index].isOccupied = 1; 
+ 
+    printf("Customer inserted successfully at index %d.\n", index); 
+} 
+ 
+// Search for a customer by customer ID 
+void searchCustomer(int custid) { 
+    int index = hashFunction(custid); 
+    int originalIndex = index; 
+    int i = 0; 
+ 
+    while (hashTable[index].isOccupied) { 
+        if (hashTable[index].customer.custid == custid) { 
+            printf("Customer found at index %d:\n", index); 
+            printf("ID: %d, Name: %s, Phone: %s\n", 
+                   hashTable[index].customer.custid, 
+                   hashTable[index].customer.custname, 
+                   hashTable[index].customer.custphno); 
+            return; 
+        } 
+        index = (originalIndex + ++i) % TABLE_SIZE; 
+        if (index == originalIndex) { 
+            break; 
+        } 
+    } 
+ 
+    printf("Customer ID %d not found!\n", custid); 
+} 
+ 
+// Display all records in the hash table 
+void displayRecords() { 
+    printf("\nHash Table Records:\n"); 
+    for (int i = 0; i < TABLE_SIZE; i++) { 
+        if (hashTable[i].isOccupied) { 
+            printf("Index %d: ID: %d, Name: %s, Phone: %s\n", 
+                   i, hashTable[i].customer.custid, 
+                   hashTable[i].customer.custname, 
+                   hashTable[i].customer.custphno); 
+        } else { 
+            printf("Index %d: Empty\n", i); 
+        } 
+    } 
+} 
+ 
+int main() { 
+    initHashTable(); 
+ 
+    int choice, custid; 
+    char custname[NAME_SIZE], custphno[PHONE_SIZE]; 
+ 
+    do { 
+        printf("\nSupermarket Customer Management:\n"); 
+        printf("1. Insert Customer\n"); 
+        printf("2. Search Customer\n"); 
+        printf("3. Display Records\n"); 
+        printf("4. Exit\n"); 
+        printf("Enter your choice: "); 
+        scanf("%d", &choice); 
+        getchar(); // Consume newline character 
+ 
+        switch (choice) { 
+            case 1: 
+                printf("Enter Customer ID: "); 
+                scanf("%d", &custid); 
+                getchar(); 
+                printf("Enter Customer Name: "); 
+                fgets(custname, NAME_SIZE, stdin); 
+                custname[strcspn(custname, "\n")] = '\0'; // Remove trailing newline 
+                printf("Enter Customer Phone: "); 
+                fgets(custphno, PHONE_SIZE, stdin); 
+                custphno[strcspn(custphno, "\n")] = '\0'; // Remove trailing newline 
+                insertCustomer(custid, custname, custphno); 
+                break; 
+ 
+            case 2: 
+                printf("Enter Customer ID to search: "); 
+                scanf("%d", &custid); 
+                searchCustomer(custid); 
+                break; 
+ 
+            case 3: 
+                displayRecords(); 
+                break; 
+ 
+            case 4: 
+                printf("Exiting program.\n"); 
+                break; 
+ 
+            default: 
+                printf("Invalid choice! Please try again.\n"); 
+        } 
+    } while (choice != 4); 
+ 
+    return 0; 
+} 
