@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define a structure for a node
+typedef struct Node {
+    int itemId;
+    struct Node *next;
+} Node;
+
+// Function to create a new node
+Node *createNode(int id) {
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    if (newNode == NULL) {
+        printf("Memory allocation failed.\n");
+        exit(1);
+    }
+    newNode->itemId = id;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to insert a node in ascending order
+Node *insertNodeSorted(Node *head, int id) {
+    Node *newNode = createNode(id);
+
+    // If the list is empty or the new node should be the first
+    if (head == NULL || head->itemId > id) {
+        newNode->next = head;
+        return newNode;
+    }
+
+    // Traverse the list to find the correct position
+    Node *current = head;
+    while (current->next != NULL && current->next->itemId < id) {
+        current = current->next;
+    }
+
+    newNode->next = current->next;
+    current->next = newNode;
+    return head;
+}
+
+// Function to display all nodes
+void displayNodes(Node *head) {
+    if (head == NULL) {
+        printf("The warehouse is empty.\n");
+        return;
+    }
+    printf("Items in the warehouse:\n");
+    while (head != NULL) {
+        printf("ID: %d\n", head->itemId);
+        head = head->next;
+    }
+}
+
+// Function to search for a node by ID
+void searchNode(Node *head, int id) {
+    while (head != NULL) {
+        if (head->itemId == id) {
+            printf("Item found: ID: %d\n", head->itemId);
+            return;
+        }
+        head = head->next;
+    }
+    printf("Item with ID %d not found.\n", id);
+}
+
+// Main function to manage the warehouse
+int main() {
+    Node *warehouse = NULL;
+    int choice, id;
+
+    do {
+        printf("\nWarehouse Management:\n");
+        printf("1. Add Item\n");
+        printf("2. Display Items\n");
+        printf("3. Search Item\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter Item ID: ");
+                scanf("%d", &id);
+                warehouse = insertNodeSorted(warehouse, id);
+                printf("Item added successfully.\n");
+                break;
+
+            case 2:
+                displayNodes(warehouse);
+                break;
+
+            case 3:
+                printf("Enter Item ID to search: ");
+                scanf("%d", &id);
+                searchNode(warehouse, id);
+                break;
+
+            case 4:
+                printf("Exiting program.\n");
+                break;
+
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    } while (choice != 4);
+
+    // Free allocated memory
+    while (warehouse != NULL) {
+        Node *temp = warehouse;
+        warehouse = warehouse->next;
+        free(temp);
+    }
+
+    return 0;
+}
