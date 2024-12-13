@@ -1,0 +1,89 @@
+. Develop and execute a program in C to perform following operations on binary search tree: a. To count
+number of non terminal nodes. b. To count number of terminal nodes. c. To count nodes with degree 2. d. To
+count total number of nodes.
+#include <stdio.h>
+#include <stdlib.h>
+// Structure for a node in the binary search tree
+struct Node {
+ int data;
+ struct Node* left;
+ struct Node* right;
+};
+// Function to create a new node
+struct Node* createNode(int data) {
+ struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+ newNode->data = data;
+ newNode->left = newNode->right = NULL;
+ return newNode;
+}
+// Function to insert a node into the BST
+struct Node* insert(struct Node* root, int data) {
+ if (root == NULL) {
+ return createNode(data);
+ }
+ if (data < root->data) {
+ root->left = insert(root->left, data);
+ } else {
+ root->right = insert(root->right, data);
+ }
+ return root;
+}
+// Function to count the total number of nodes
+int countTotalNodes(struct Node* root) {
+ if (root == NULL) {
+ return 0;
+ }
+ return 1 + countTotalNodes(root->left) + countTotalNodes(root->right);
+}
+// Function to count the number of non-terminal nodes (nodes with at least one child)
+int countNonTerminalNodes(struct Node* root) {
+ if (root == NULL) {
+ return 0;
+ }
+ int count = 0;
+ if (root->left != NULL || root->right != NULL) {
+ count = 1;
+ }
+ return count + countNonTerminalNodes(root->left) + countNonTerminalNodes(root->right);
+}
+// Function to count the number of terminal nodes (leaf nodes)
+int countTerminalNodes(struct Node* root) {
+ if (root == NULL) {
+ return 0;
+ }
+ if (root->left == NULL && root->right == NULL) {
+ return 1;
+ }
+ return countTerminalNodes(root->left) + countTerminalNodes(root->right);
+}
+// Function to count the number of nodes with degree 2 (nodes with both left and right children)
+int countNodesWithDegree2(struct Node* root) {
+ if (root == NULL) {
+ return 0;
+ }
+ int count = 0;
+ if (root->left != NULL && root->right != NULL) {
+ count = 1;
+ }
+ return count + countNodesWithDegree2(root->left) + countNodesWithDegree2(root->right);
+}
+int main() {
+ struct Node* root = NULL;
+ // Inserting nodes into the BST
+ root = insert(root, 50);
+ insert(root, 30);
+ insert(root, 20);
+ insert(root, 40);
+ insert(root, 70);
+ insert(root, 60);
+ insert(root, 80);
+ // Count total number of nodes
+ printf("Total number of nodes: %d\n", countTotalNodes(root));
+ // Count non-terminal nodes
+ printf("Number of non-terminal nodes: %d\n", countNonTerminalNodes(root));
+ // Count terminal nodes (leaf nodes)
+ printf("Number of terminal nodes: %d\n", countTerminalNodes(root));
+ // Count nodes with degree 2
+ printf("Number of nodes with degree 2: %d\n", countNodesWithDegree2(root));
+ return 0;
+}
