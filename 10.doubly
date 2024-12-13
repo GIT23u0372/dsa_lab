@@ -1,0 +1,117 @@
+10. Develop and execute a program in C using suitable data structures to perform Searching a data item in an
+ordered list of items in both directions and implement the following operations: a. Create a doubly linked list
+by adding each node at the start. b. Insert a new node at the end of the list. c. Display the content of a list.
+Consider an integer number as a data item.
+#include <stdio.h>
+#include <stdlib.h>
+// Structure for a doubly linked list node
+struct Node {
+ int data;
+ struct Node* next;
+ struct Node* prev;
+};
+// Function to create a new node
+struct Node* createNode(int data) {
+ struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+ newNode->data = data;
+ newNode->next = NULL;
+ newNode->prev = NULL;
+ return newNode;
+}
+// Function to add a node at the start of the doubly linked list
+void insertAtStart(struct Node** head, int data) {
+ struct Node* newNode = createNode(data);
+ newNode->next = *head;
+
+ if (*head != NULL) {
+ (*head)->prev = newNode;
+ }
+
+ *head = newNode;
+}
+// Function to insert a new node at the end of the doubly linked list
+void insertAtEnd(struct Node** head, int data) {
+ struct Node* newNode = createNode(data);
+
+ if (*head == NULL) {
+ *head = newNode;
+ return;
+ }
+ struct Node* temp = *head;
+ while (temp->next != NULL) {
+ temp = temp->next;
+ }
+ temp->next = newNode;
+ newNode->prev = temp;
+}
+// Function to display the content of the doubly linked list from head to tail
+void displayList(struct Node* head) {
+ if (head == NULL) {
+ printf("List is empty.\n");
+ return;
+ }
+ struct Node* temp = head;
+ printf("List content (head to tail): ");
+ while (temp != NULL) {
+ printf("%d ", temp->data);
+ temp = temp->next;
+ }
+ printf("\n");
+}
+// Function to search for a data item in the list (head to tail)
+int searchForward(struct Node* head, int data) {
+ struct Node* temp = head;
+ while (temp != NULL) {
+ if (temp->data == data) {
+ return 1; // Found
+ }
+ temp = temp->next;
+ }
+ return 0; // Not found
+}
+// Function to search for a data item in the list (tail to head)
+int searchBackward(struct Node* head, int data) {
+ if (head == NULL) {
+ return 0; // List is empty
+ }
+ struct Node* temp = head;
+ // Traverse to the last node
+ while (temp->next != NULL) {
+ temp = temp->next;
+ }
+ // Search backward
+ while (temp != NULL) {
+ if (temp->data == data) {
+ return 1; // Found
+ }
+ temp = temp->prev;
+ }
+ return 0; // Not found
+}
+int main() {
+ struct Node* head = NULL;
+ // Create a doubly linked list by adding nodes at the start
+ insertAtStart(&head, 10);
+ insertAtStart(&head, 20);
+ insertAtStart(&head, 30);
+ // Insert a new node at the end of the list
+ insertAtEnd(&head, 40);
+ insertAtEnd(&head, 50);
+ // Display the list content
+ displayList(head);
+// Search for an item from head to tail
+ int searchItem = 40;
+ if (searchForward(head, searchItem)) {
+ printf("Item %d found in the list (head to tail).\n", searchItem);
+ } else {
+ printf("Item %d not found in the list (head to tail).\n", searchItem);
+ }
+// Search for an item from tail to head
+ searchItem = 50;
+ if (searchBackward(head, searchItem)) {
+ printf("Item %d found in the list (tail to head).\n", searchItem);
+ } else {
+ printf("Item %d not found in the list (tail to head).\n", searchItem);
+ }
+ return 0;
+}
