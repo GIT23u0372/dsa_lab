@@ -1,0 +1,93 @@
+Develop and execute a program in C using suitable data structures to create a binary tree for an expression.
+The tree traversals in some proper method should result in conversion of original expression into prefix, infix
+and postfix forms. Display the original expression along with the three different forms also
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+// Structure for a node in the expression tree
+struct Node {
+ char data;
+ struct Node* left;
+ struct Node* right;
+};
+// Function to create a new node
+struct Node* createNode(char data) {
+ struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+ newNode->data = data;
+ newNode->left = newNode->right = NULL;
+ return newNode;
+}
+// Function to check if the character is an operand (A-Z, a-z, or digits)
+int isOperand(char ch) {
+ return isalpha(ch) || isdigit(ch);
+}
+// Function to create the expression tree from a given expression
+struct Node* constructTree(char* expression, int* index) {
+ // If the expression has ended
+ if (expression[*index] == '\0')
+ return NULL;
+
+ char ch = expression[*index];
+ (*index)++;
+
+ struct Node* node = createNode(ch);
+ // If the node is an operand, return it
+ if (isOperand(ch)) {
+ return node;
+ }
+ // Otherwise, it's an operator, so we need to build the tree recursively
+ node->left = constructTree(expression, index);
+ node->right = constructTree(expression, index);
+ return node;
+}
+// Inorder traversal (Infix notation)
+void inorder(struct Node* root) {
+ if (root == NULL)
+ return;
+ if (root->left) printf("(");
+ inorder(root->left);
+ printf("%c", root->data);
+ inorder(root->right);
+ if (root->right) printf(")");
+}
+// Preorder traversal (Prefix notation)
+void preorder(struct Node* root) {
+ if (root == NULL)
+ return;
+ printf("%c", root->data);
+ preorder(root->left);
+ preorder(root->right);
+}
+// Postorder traversal (Postfix notation)
+void postorder(struct Node* root) {
+ if (root == NULL)
+ return;
+ postorder(root->left);
+ postorder(root->right);
+ printf("%c", root->data);
+}
+int main() {
+ char expression[100];
+ int index = 0;
+ // Input expression (example: +A*BC)
+ printf("Enter the expression: ");
+ scanf("%s", expression);
+ // Construct the expression tree
+ struct Node* root = constructTree(expression, &index);
+ // Display the original expression and the three forms
+ printf("\nOriginal Expression: %s\n", expression);
+
+ // Infix (Inorder traversal)
+ printf("Infix Expression: ");
+ inorder(root);
+ printf("\n");
+ // Prefix (Preorder traversal)
+ printf("Prefix Expression: ");
+ preorder(root);
+ printf("\n");
+ // Postfix (Postorder traversal)
+ printf("Postfix Expression: ");
+ postorder(root);
+ printf("\n");
+ return 0;
+}
