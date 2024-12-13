@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+// Function to merge two files and display common strings
+void mergeFileAndDisplayCommonStrings(FILE *file1, FILE *file2, FILE *outputFile) {
+ char str1[15], str2[15];
+ int commonExists = 0;
+ // Read initial lines from both files
+ char *read1 = fgets(str1, 15, file1);
+ char *read2 = fgets(str2, 15, file2);
+ // Remove newline characters if present
+ if (read1) str1[strcspn(str1, "\n")] = '\0';
+ if (read2) str2[strcspn(str2, "\n")] = '\0';
+ // Merge files until both are completely read
+ while (read1 != NULL && read2 != NULL) {
+ int cmp = strcmp(str1, str2);
+ if (cmp < 0) {
+ fprintf(outputFile, "%s\n", str1);
+ read1 = fgets(str1, 15, file1);
+ if (read1) str1[strcspn(str1, "\n")] = '\0';
+ } else if (cmp > 0) {
+ fprintf(outputFile, "%s\n", str2);
+ read2 = fgets(str2, 15, file2);
+ if (read2) str2[strcspn(str2, "\n")] = '\0';
+ } else { // str1 == str2
+ fprintf(outputFile, "%s\n", str1);
+ printf("Common string: %s\n", str1);
+ commonExists = 1;
+ read1 = fgets(str1, 15, file1);
+ if (read1) str1[strcspn(str1, "\n")] = '\0';
+ read2 = fgets(str2, 15, file2);
+ if (read2) str2[strcspn(str2, "\n")] = '\0';
+ }
+ }
+ // Write remaining lines from file1
+ while (read1 != NULL) {
+ fprintf(outputFile, "%s\n", str1);
+ read1 = fgets(str1, 15, file1);
+ if (read1) str1[strcspn(str1, "\n")] = '\0';
+ }
+ // Write remaining lines from file2
+ while (read2 != NULL) {
+ fprintf(outputFile, "%s\n", str2);
+ read2 = fgets(str2, 15, file2);
+ if (read2) str2[strcspn(str2, "\n")] = '\0';
+ }
+ // If no common strings were found
+ if (!commonExists) {
+ printf("No common strings found\n");
+ }
+}
+int main() {
+ FILE *file1, *file2, *outputFile;
+ // Open the first input file
+ file1 = fopen("USN1.txt", "r");
+ if (file1 == NULL) {
+ printf("Could not open file1.txt\n");
+ return 1;
+ }
+ // Open the second input file
+ file2 = fopen("USN2.txt", "r");
+ if (file2 == NULL) {
+ printf("Could not open file2.txt\n");
+ fclose(file1);
+ return 1;
+ }
+ // Open the output file
+ outputFile = fopen("USN3.txt", "w");
+ if (outputFile == NULL) {
+ printf("Could not open outputFile.txt\n");
+ fclose(file1);
+ fclose(file2);
+ return 1;
+ }
+ // Call the function to merge and find common strings
+ mergeFileAndDisplayCommonStrings(file1, file2, outputFile);
+ // Close all files
+ fclose(file1);
+ fclose(file2);
+ fclose(outputFile);
+ return 0;
+}
